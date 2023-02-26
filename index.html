@@ -1,0 +1,195 @@
+<!DOCTYPEhtml>
+<html lang="fr">
+    <head>
+        <meta charset="UTF-8">
+        <link rel="stylesheet" href="style.css">
+        <title>JS-Manip-DOM_Box</title>
+    </head>
+    <body>
+        <div id="home">
+            <h1>The Boxes Game</h1>
+            <button>Start</button>
+        </div>
+        <div id="container">
+            <div id="userScore"></div>
+            <div id="center">
+                <h2 id="userTime">Time <time datetime="00:00:00">00:00:00</time></h2>
+                <div id="board"></div>
+            </div>
+        </div>
+
+            <script>
+                function shuffleChildren(parent){ //fonction permettant de mélanger les enfants d'un parent donné
+                    let children=parent.children
+                    let i=children.length, k, temp
+                    while(i-- > 0){ //la boucle continue tant que 1 oté de i est positif
+                        k=Math.floor(Math.random()*(i+1)) //k stocke un nb aléatoire basé sur i 
+                        temp=children[k] //temp pointe temporairement l'élément à la position k dans board
+                        children[k]=children[i] //remplace l'élément à la position k par l'élément à la position i
+                        parent.appendChild(temp) //place l'élément pointé temporairement à la fin du contenu de board
+                    }
+                }
+
+                function showReaction(type, clickedBox){//type est une chaîne de caractères correspondant au type de réaction souhaité tandis que clickedBox est la boîte sur laquelle l'effet sera appliqué
+                    clickedBox.classList.add(type) //application du css "type" (error, success ou notice) à clickedBox
+                    if(type !== "success"){ //vérifie que type n'est pas égal à "success" pour exécuter setTimeout (permet de retarder l'exécution d'une ou plusieurs instructions du délai voulu en millisecondes)
+                        setTimeout(function(){
+                            clickedBox.classList.remove(type) //ici, la suppression de la classe CSS type est retardée de 800 millisecondes soit 0.8s
+                        }, 800) 
+                    }
+                }
+
+                function startTimer(){
+                    timeout=setTimeout(timer, 1000) //appel de la fonction toutes les 1000 millisecondes, soit toutes les secondes
+                }
+
+                function timer(){
+                    scd++
+                    if (scd>=60) {
+                        scd=0
+                        min++
+                        if (min>=60) {
+                            min=0
+                            h++
+                        }
+                    }
+
+                    h2.textContent = (h > 9 ? h : "0" + h) 
+                    + ":" + (min > 9 ? min : "0" + min)
+                    + ":" + (scd > 9 ? scd : "0" + scd)
+
+                    startTimer()
+                }
+
+                function endTimer(){
+                    clearTimeout(timeout)
+                }
+
+                function resetTimer(){
+                    h2.innerText="00:00:00"
+                    h=0
+                    min=0
+                    scd=0
+                    clearTimeout(timeout)
+                    startTimer()
+                }
+
+                function displayUserScore(){
+                    let newScore = (h > 9 ? h : "0" + h) 
+                    + ":" + (min > 9 ? min : "0" + min)
+                    + ":" + (scd > 9 ? scd : "0" + scd)
+                    let userNewScore=score.cloneNode()
+                    userNewScore.innerHTML="Time : "+newScore
+                    userScore.appendChild(userNewScore)
+                }
+
+                function deleteAll(){
+                    nb=1
+                    board.querySelectorAll("div").forEach(function(box){
+                        box.remove("div")
+                        box.classList.add("display")
+                    })
+                }
+
+                const box= document.createElement("div") //création d'un élément <div>
+                box.classList.add("box") //ajoute la classe .box à l'élément <div>
+
+                const board= document.querySelector("#board") //pointe le 1er élément #board
+
+                const home=document.querySelector("#home")
+                home.classList.add("home")
+
+                const h1=document.querySelector("h1")
+
+                const button=document.querySelector("button")
+                button.classList.add("startBtn")
+
+                const score= document.createElement("h2")
+
+                let h2=document.getElementsByTagName("time")[0], h=0, min=0, scd=0
+                let timeout
+
+                const container=document.querySelector("#container")
+                container.classList.add("display")
+
+                center.appendChild(userTime)
+                center.appendChild(board)
+                
+                let nb=1 //variable représentant le numéro de la boite attendue
+                
+                button.addEventListener("click", function(){
+                    let pseudo=prompt("Pseudo ?")
+                    startGame()
+                    
+                    function startGame(){
+                        let nbDepart=prompt("Nombre de boîtes ?")
+                        if(isNaN(nbDepart)==true){ //isNaN (is Not A Number) permet de vérifier si la chaîne de caractères est un nombre ou non
+                            startGame()
+                        }else if (nbDepart==null || nbDepart<=0){
+                            alert("Veuillez choisir un nombre de boîtes.")
+                            startGame()
+                        }else{
+                            container.classList.remove("display")
+                            home.classList.add("display")
+                            home.classList.remove("home")
+                            h1.classList.add("display")
+                            button.classList.add("display")
+                            for(let i=1; i<=nbDepart;i++){
+                                let newbox=box.cloneNode() //création de newbox (qui est un clone de box)
+                                newbox.innerText=i //ajout d'un noeud de texte
+                                board.appendChild(newbox) //newbox devient un élément enfant de #board
+                
+                                newbox.addEventListener("click", function(){ //ajout d'un évènement "click"
+                                    if (i===nb){ //vérifie si la boîte sur laquelle le click s'effectue est identique à la valeur de la variable nb
+                                        newbox.classList.add("box-clicked") //ajoute la classe .box-clicked à l'élément newbox (case grisée après 1 click)
+                                        shuffleChildren(board)
+                                        if(nb==board.children.length){ //vérifie si la variable nb est égale au nombre de boîtes (si c'est le cas, le dernier click était sur la dernière boîte, le joueur a donc gagné)
+                                            board.querySelectorAll(".box-clicked").forEach(function(box){ //forEach sur toutes les boîtes du jeu pour appeler showReaction en mode success (toutes les boîtes deviendront vertes pour indiquer la victoire)
+                                                showReaction("success", box)
+                                            })
+                                            endTimer() 
+                                            let userPseudo=score.cloneNode()
+                                            let userNbBoites=score.cloneNode()
+                                            userPseudo.innerHTML="Pseudo : "+pseudo+"\n"
+                                            userNbBoites.innerHTML="Number of boxes : "+nbDepart+"\n"
+                                            userScore.appendChild(userPseudo)
+                                            userScore.appendChild(userNbBoites)
+                                            displayUserScore()
+                                            setTimeout(function changePlayer(){
+                                                let changePlayer=confirm("Voulez-vous changer de joueur ?") //La fonction confirm affiche une fenêtre avec un bouton "OK" (true) et un bouton "Annuler" (false)
+                                                if(changePlayer==true){
+                                                    deleteAll()
+                                                    container.classList.add("display")
+                                                    home.classList.remove("display")
+                                                    home.classList.add("home")
+                                                    h1.classList.remove("display")
+                                                    button.classList.remove("display")
+                                                }else{
+                                                    deleteAll()
+                                                    startGame()
+                                                }
+                                            }, 3000)
+                                        }
+                                        nb++
+                                    } else if(i>nb){ //vérifie si le numéro de la boîte est supérieur à la variable nb (si c'est le cas, le joueur a cliqué sur la mauvaise boîte, game over)
+                                        showReaction("error", newbox) //la mauvaise boîte deviendra rouge
+                                        nb=1
+                                        board.querySelectorAll(".box-clicked").forEach(function(validBox){ //sélection des boîtes grisées .box-clicked en passant par l'élément parent #board + application d'un forEach (permettant de passer d'un élément à l'autre, ici .box-clicked est représenté par validBox) sur la méthode querySelectorAll (qui récupère un tableau d'éléments)
+                                            validBox.classList.remove("box-clicked")
+                                        })
+                                        resetTimer()
+                                        shuffleChildren(board)
+                                    } else{ //dernière possibilité : le joueur a cliqué sur une boîte déjà grisée (si c'est le cas, on l'informe simplement mais pas de game over)
+                                        showReaction("notice", newbox) //la boîte déjà cliquée deviendra bleue
+                                    }
+                                })
+                            }
+                            resetTimer()
+                            shuffleChildren(board)
+                        }
+                    }
+                })
+            </script>
+        </main>
+    </body>
+</html>

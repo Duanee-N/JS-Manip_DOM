@@ -1,0 +1,131 @@
+/* ***************GENERAL*************** */
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    text-decoration: none;
+}
+
+body{
+    color: #f5f5f5eb;
+    min-height: 100vh;
+    background-image:radial-gradient(rgb(188, 139, 245), #925bc2);
+    background-repeat: no-repeat;
+}
+
+h2{
+    text-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+
+/* ***************MAIN*************** */
+.home{
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 50px;
+    font-size: 50px;
+    text-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    color: f5f5f5eb;
+}
+
+.startBtn{
+    cursor: pointer;
+    background-color: f5f5f5eb;
+    color: rgb(188, 139, 245);
+    border-radius: 5px;
+    width: 200px;
+    height: 100px;
+    font-size: 40px;
+}
+
+.score{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+#userScore{
+    padding:20px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+#center{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 80vh;
+}
+
+#userTime{
+    display: flex;
+    justify-content: center;
+    font-size: 40px;
+    gap: 10px;
+}
+
+#board{
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.box{
+    width: 80px;
+    height: 80px;
+    border: 1px solid black;
+    background-color: #7e439ed1;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+    font-size: 3em;
+    text-align: center;
+    line-height: 75px;
+    margin: 5px;
+    animation: appear 1s;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.8s, transform 0.8s;
+}
+
+.box-clicked{
+    background-color: #ccc;
+    color: #aaa;
+    transform: scale(0.8);
+}
+
+.box.error{
+    color: rgb(144, 58, 58);
+    background-color: rgb(255, 160, 190);
+}
+
+.box.success{
+    color: rgb(11, 110, 19);
+    background-color: rgb(172, 251, 172);
+    cursor: default;
+}
+
+.box.notice{
+    color: rgb(18, 16, 151);
+    background-color: rgb(184, 217, 255);
+    cursor: not-allowed;
+}
+
+.display{
+    display: none;
+    width: 0px;
+    height: 0px;
+}
+
+@keyframes appear{
+    from{
+        transform: scale(0) rotate(180deg);
+    }
+    to{
+        transform: scale(1) rotate(0deg);
+    }
+}
